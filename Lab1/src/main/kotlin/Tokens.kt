@@ -1,5 +1,9 @@
 class Tokens {
-    val map = mapOf(
+    fun getKeywordNames() = keywords.entries.associateBy { (k, v) -> v to k }
+
+    fun getOperatorNames() = operators.entries.associateBy { (k, v) -> v to k }
+
+    val keywords = mapOf(
         "as" to Token("as", Type.KEYWORD),
         "as?" to Token("AS_SAFE", Type.KEYWORD),
         "break" to Token("CONTINUE", Type.KEYWORD),

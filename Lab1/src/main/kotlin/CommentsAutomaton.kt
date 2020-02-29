@@ -3,15 +3,11 @@ import java.lang.StringBuilder
 //TODO: Refactor me
 class CommentsAutomaton : FiniteAutomaton {
 
-    private var analyzed: StringBuilder = StringBuilder()
+    private var recognized: StringBuilder = StringBuilder()
     private val start = State(false)
-    private val currentState = start
+    private var currentState = start
 
     init {
-        buildAutomatomaton()
-    }
-
-    private fun buildAutomatomaton() {
         val commentStart = State(false)
         start.addTransition("/".toRegex(), commentStart)
 
@@ -19,8 +15,34 @@ class CommentsAutomaton : FiniteAutomaton {
         addMultipleLinesComment(commentStart)
     }
 
-    override fun nextSymbol(symbol: Char) {
+    override fun nextSymbol(char: Char): Boolean {
+        val symbol = char.toString()
+        var nextState: State? = null
+        for (regex in currentState.transition.keys) {
+            if (symbol.matches(regex)) {
+                nextState = currentState.transition[regex]
+                recognized.append(symbol)
+                break
+            }
+        }
+        if (nextState != null) {
+            currentState = nextState
+            return true
+        }
+        return false
+    }
 
+    override fun getRecognizedString(): String {
+        return recognized.toString()
+    }
+
+    override fun reset() {
+        currentState = start
+        recognized.setLength(0)
+    }
+
+    override fun finished(): Boolean {
+        return currentState.isFinal
     }
 
     // [some characters]\n
@@ -33,6 +55,7 @@ class CommentsAutomaton : FiniteAutomaton {
         currentState.addTransition(".".toRegex(), nextState)
         nextState.addTransition(".".toRegex(), nextState)
 
+        currentState = nextState
         nextState = State(true)
         currentState.addTransition("\n".toRegex(), nextState)
 

@@ -7,10 +7,12 @@ group 'org.example'
 version '1.0-SNAPSHOT'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
+    compile 'org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
@@ -21,4 +23,4 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-mainClassName='Main'
+mainClassName = 'Main'
