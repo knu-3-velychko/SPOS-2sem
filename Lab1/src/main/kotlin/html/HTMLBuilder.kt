@@ -3,27 +3,27 @@ import kotlinx.html.stream.appendHTML
 import java.io.FileOutputStream
 import java.io.PrintStream
 
-
-class HTMLBuilder {
+class HTMLBuilder(val path: String) {
     fun build() {
-        val fout = FileOutputStream("src/main/resources/index.html")
+        val fout = FileOutputStream(path)
         val pout = PrintStream(fout)
 
         pout.appendHTML().html {
             head {
                 meta { charset = "utf-8" }
-                link(rel = "stylesheet",type="text/css", href = "style.css")
+                link(rel = "stylesheet", type = "text/css", href = "style.css")
             }
             body {
                 div {
                     p {
-                        id = "hello"
+                        id = "Hello"
                         classes = setOf("comment")
                         text("Hello")
                     }
                 }
             }
         }
+
         pout.close()
         fout.close()
     }
