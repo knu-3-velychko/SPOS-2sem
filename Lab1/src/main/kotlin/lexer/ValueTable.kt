@@ -1,2 +1,5 @@
 package lexer
 
+class ValueTable {
+
+}

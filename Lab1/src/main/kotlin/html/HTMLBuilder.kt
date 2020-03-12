@@ -1,30 +1,39 @@
+package html
+
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
+import lexer.Token
 import java.io.FileOutputStream
 import java.io.PrintStream
 
 class HTMLBuilder(val path: String) {
-    fun build() {
-        val fout = FileOutputStream(path)
-        val pout = PrintStream(fout)
+    private val fileStream = FileOutputStream(path)
+    private val printStream = PrintStream(fileStream)
 
-        pout.appendHTML().html {
+    fun addHead() {
+        printStream.appendHTML().html {
             head {
                 meta { charset = "utf-8" }
                 link(rel = "stylesheet", type = "text/css", href = "style.css")
             }
-            body {
-                div {
-                    p {
-                        id = "Hello"
-                        classes = setOf("comment")
-                        text("Hello")
+        }
+    }
+
+    fun addToken(token: Token) {
+        if (token.attributeValue == -1) {
+            printStream.appendHTML().html {
+                body {
+                    div {
+                        id=token.name
+                        text(token.name)    //FIXME: get token name
                     }
                 }
             }
         }
+    }
 
-        pout.close()
-        fout.close()
+    fun close() {
+        printStream.close()
+        fileStream.close()
     }
 }
