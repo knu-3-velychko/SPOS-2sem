@@ -24,7 +24,7 @@ public class Token {
         OPERATOR_POINT,
         OPERATOR_EQUAL,
         OPERATOR_ASSIGNMENT,
-        OPERATOR_EXCLAME_EQUAL,
+        OPERATOR_NOT_EQUAL,
         OPERATOR_GREATER,
         OPERATOR_LESS,
         TYPE_INT,
@@ -81,5 +81,13 @@ public class Token {
 
     public Type getType() {
         return this.type;
+    }
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "type=" + type +
+                ", tokenString='" + tokenString + '\'' +
+                '}';
     }
 }
