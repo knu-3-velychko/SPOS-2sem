@@ -4,6 +4,7 @@ class JarvisMethod(private val points: MutableList<Point>) {
     val hull by lazy {
         if (points.size <= 3)
             points
+        val something: Int = 0xf45
         else {
             val result = mutableListOf<Point>()
 

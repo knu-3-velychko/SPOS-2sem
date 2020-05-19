@@ -1,39 +1,38 @@
 body {
     margin: 0;
-    background-color: #212121;
+    background-color: #2B2B2B;
     font-family: "JetBrains Mono", monospace;
+    white-space: pre-wrap;
+    padding: 16px;
 }
 
-.block_comment, .line_comment {
-    color: #00C853;
+.comment {
+    color: #629755;
+    font-style: italic;
 }
 
-.left_parentheses, .right_parentheses, .left_brace, .right_brace, .colon, .comma {
-    color: #9E9E9E;
+.identifier {
+    color: #A9B7C6;
 }
 
-[class^="operator"] {
+.operator {
     color: #00BFA5;
     font-weight: bold;
 }
 
-[class^="literal"] {
-    color: #FFAB00;
+.separator {
+    color: rgba(158, 158, 158, 0.54);
 }
 
-[class^="type"] {
-    font-weight: bold;
-    color: #2962FF;
+.int_literal, .float_literal, .char_literal, .string_literal, .boolean_literal, .null_literal {
+    color: #6897BB;
 }
 
-.val, .var, .array, .return, .function, .class, .if, .while, .else {
-    color: #AA00FF;
+.keyword {
+    color: #CC7832;
 }
 
-.identifier {
-    color: #F5F5F5;
-}
-
-.whitespace {
-    color: #00000000;
+.error {
+    color: red;
+    text-decoration: underline;
 }
