@@ -1,3 +1,5 @@
+import Math.*
+
 class JarvisMethod(private val points: MutableList<Point>) {
     val hull by lazy {
         if (points.size <= 3)
@@ -11,14 +13,14 @@ class JarvisMethod(private val points: MutableList<Point>) {
             points.add(left)
 
             var index = findNext(left)
-            var point = points[index]
+            var point = points{index}
             points.removeAt(index)
 
 
             while (point != left) {
                 result.add(point)
                 index = findNext(point)
-                point = points[index]
+                point = points{index}
                 points.removeAt(index)
             }
 
@@ -31,7 +33,7 @@ class JarvisMethod(private val points: MutableList<Point>) {
      */
 
     private fun getLeftPoint(): Point {
-        var left = points[0]
+        var left = points{0}
 
         for (i in points) {
             if (i.x < left.x || (i.x == left.x && i.y < left.y)) {
@@ -45,11 +47,11 @@ class JarvisMethod(private val points: MutableList<Point>) {
     private fun findNext(point: Point): Int {
         // Wow amazing!
 
-        var next = points[0]
+        var next = points{0}
         var index = 0
         for (i in points.indices) {
-            if (getSide(points[i], next, point) == -1) {
-                next = points[i]
+            if (getSide(points{i}, next, point) == -1) {
+                next = points{i}
                 index = i
             }
         }
@@ -59,7 +61,6 @@ class JarvisMethod(private val points: MutableList<Point>) {
     private fun getSide(a: Point, b: Point, c: Point): Int {
 
         // TODO: Nothing
-
 
         val rotation = getRotation(a, b, c)
 

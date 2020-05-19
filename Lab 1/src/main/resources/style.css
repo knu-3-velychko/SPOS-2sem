@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+    background-color: #212121;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.block_comment, .line_comment {
+    color: #00C853;
+}
+
+.left_parentheses, .right_parentheses, .left_brace, .right_brace, .colon, .comma {
+    color: #9E9E9E;
+}
+
+[class^="operator"] {
+    color: #00BFA5;
+    font-weight: bold;
+}
+
+[class^="literal"] {
+    color: #FFAB00;
+}
+
+[class^="type"] {
+    font-weight: bold;
+    color: #2962FF;
+}
+
+.val, .var, .array, .return, .function, .class, .if, .while, .else {
+    color: #AA00FF;
+}
+
+.identifier {
+    color: #F5F5F5;
+}
+
+.whitespace {
+    color: #00000000;
+}

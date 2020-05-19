@@ -47,6 +47,9 @@ public class Lexer {
             Pattern pattern = Pattern.compile(".{" + fromIndex + "}" + tokenRegex.get(type), Pattern.DOTALL);
             Matcher matcher = pattern.matcher(code);
 
+            if (type == Token.Type.NEW_LINE && matcher.matches())
+                return new Token(stringIndex, fromIndex, "\n", type);
+
             if (matcher.matches()) {
                 return new Token(
                         stringIndex,
@@ -61,6 +64,8 @@ public class Lexer {
     }
     
     private void initTokenRegex() {
+        //        tokenRegex.put(Token.Type.NEW_LINE, "(\\n).*");
+        tokenRegex.put(Token.Type.NEW_LINE, "\\n");
         tokenRegex.put(Token.Type.BLOCK_COMMENT, "(/\\*.*?\\*/).*");
         tokenRegex.put(Token.Type.LINE_COMMENT, "(//.*).*");
         tokenRegex.put(Token.Type.WHITE_SPACE, "( ).*");
@@ -81,7 +86,6 @@ public class Lexer {
         tokenRegex.put(Token.Type.TYPE_INT, "\\b(Int)\\b.*");
         tokenRegex.put(Token.Type.TYPE_DOUBLE, "\\b(Int|Double)\\b.*");
         tokenRegex.put(Token.Type.TAB, "(\\t).*");
-        tokenRegex.put(Token.Type.NEW_LINE, "(\\n).*");
         tokenRegex.put(Token.Type.LITERAL_FALSE, "\\b(false)\\b.*");
         tokenRegex.put(Token.Type.LITERAL_TRUE, "\\b(true)\\b.*");
         tokenRegex.put(Token.Type.LITERAL_NULL, "\\b(null)\\b.*");
