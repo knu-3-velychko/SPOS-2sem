@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LexerWrapper {
 
@@ -17,6 +19,20 @@ public class LexerWrapper {
         Lexer lexer = new Lexer(fileName);
         lexer.tokenize();
         tokens = lexer.getTokens();
+    }
+
+    public void groupedTokens() {
+        Map<Token.Type, List<Token>> mappedTokens =
+                tokens.stream().collect(Collectors.groupingBy(Token::getType));
+
+        mappedTokens.forEach((key, value) -> {
+            if (key != Token.Type.WHITESPACE) {
+                System.out.println(key.toString() + " : ");
+                for (var val : value) {
+                    System.out.println("\t" + val.getTokenString());
+                }
+            }
+        });
     }
 
     public void printTokens() {
