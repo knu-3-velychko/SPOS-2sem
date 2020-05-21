@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    background-color: #2B2B2B;
+    font-family: "JetBrains Mono", monospace;
+    white-space: pre-wrap;
+    padding: 16px;
+}
+
+.comment {
+    color: #629755;
+    font-style: italic;
+}
+
+.identifier {
+    color: #A9B7C6;
+}
+
+.operator {
+    color: #00BFA5;
+    font-weight: bold;
+}
+
+.separator {
+    color: rgba(158, 158, 158, 0.54);
+}
+
+.int_literal, .float_literal, .char_literal, .string_literal, .boolean_literal, .null_literal {
+    color: #6897BB;
+}
+
+.keyword {
+    color: #CC7832;
+}
+
+.error {
+    color: red;
+    text-decoration: underline;
+}
