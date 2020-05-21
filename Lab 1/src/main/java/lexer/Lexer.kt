@@ -8,13 +8,10 @@ import java.util.*
 
 class Lexer(filePath: String) {
     private var state = 0
-    private val tokens: MutableList<Token>
+    val tokens: MutableList<Token>
     private var code: String
     private var buffer: StringBuilder
     private var letter = 0
-    fun getTokens(): List<Token> {
-        return tokens
-    }
 
     fun tokenize() {
         code += " "
@@ -87,48 +84,67 @@ class Lexer(filePath: String) {
      * Buffer   : empty
      */
     private fun startingState_0(c: Char) {
-        if (c == '/') {
-            addToBuffer(c, 1)
-        } else if (Character.isWhitespace(c)) {
-            addToken(Token.Type.WHITESPACE, c)
-            state = 0
-        } else if (Character.isJavaIdentifierStart(c)) {
-            addToBuffer(c, 2)
-        } else if (c == '0') {
-            addToBuffer(c, 3)
-        } else if (Character.isDigit(c)) {
-            addToBuffer(c, 4)
-        } else if (c == '\'') {
-            addToBuffer(c, 5)
-        } else if (c == '\"') {
-            addToBuffer(c, 6)
-        } else if (c == '.') {
-            addToBuffer(c, 7)
-        } else if (CharacterDeterminer.separator(c)) {
-            addToken(Token.Type.SEPARATOR, c)
-            state = 0
-        } else if (c == '>') {
-            addToBuffer(c, 8)
-        } else if (c == '<') {
-            addToBuffer(c, 9)
-        } else if (c == '&') {
-            addToBuffer(c, 10)
-        } else if (c == '^' || c == '!' || c == '*' || c == '=' || c == '%') {
-            addToBuffer(c, 11)
-        } else if (c == ':') {
-            addToBuffer(c, 12)
-        } else if (c == '+') {
-            addToBuffer(c, 13)
-        } else if (c == '-') {
-            addToBuffer(c, 14)
-        } else if (c == '?' || c == '~') {
-            addToken(Token.Type.OPERATOR, c)
-            state = 0
-        } else if (c == '#') {
-            addToBuffer(c, -1)
-        } else if (c == '|') {
-            addToBuffer(c, 20)
-        } else {
+        when {
+            c == '/' -> {
+                addToBuffer(c, 1)
+            }
+            Character.isWhitespace(c) -> {
+                addToken(Token.Type.WHITESPACE, c)
+                state = 0
+            }
+            Character.isJavaIdentifierStart(c) -> {
+                addToBuffer(c, 2)
+            }
+            c == '0' -> {
+                addToBuffer(c, 3)
+            }
+            Character.isDigit(c) -> {
+                addToBuffer(c, 4)
+            }
+            c == '\'' -> {
+                addToBuffer(c, 5)
+            }
+            c == '\"' -> {
+                addToBuffer(c, 6)
+            }
+            c == '.' -> {
+                addToBuffer(c, 7)
+            }
+            CharacterDeterminer.separator(c) -> {
+                addToken(Token.Type.SEPARATOR, c)
+                state = 0
+            }
+            c == '>' -> {
+                addToBuffer(c, 8)
+            }
+            c == '<' -> {
+                addToBuffer(c, 9)
+            }
+            c == '&' -> {
+                addToBuffer(c, 10)
+            }
+            c == '^' || c == '!' || c == '*' || c == '=' || c == '%' -> {
+                addToBuffer(c, 11)
+            }
+            c == ':' -> {
+                addToBuffer(c, 12)
+            }
+            c == '+' -> {
+                addToBuffer(c, 13)
+            }
+            c == '-' -> {
+                addToBuffer(c, 14)
+            }
+            c == '?' || c == '~' -> {
+                addToken(Token.Type.OPERATOR, c)
+                state = 0
+            }
+            c == '#' -> {
+                addToBuffer(c, -1)
+            }
+            c == '|' -> {
+                addToBuffer(c, 20)
+            }
         }
     }
 
@@ -137,18 +153,23 @@ class Lexer(filePath: String) {
      * Buffer   : /
      * States   : //, / *, /=...
      */
-    private fun slash_1(c: Char) {
-        if (c == '/') {
+    private fun slash_1(c: Char) = when {
+        c == '/' -> {
             addToBuffer(c, 15)
-        } else if (c == '*') {
+        }
+        c == '*' -> {
             addToBuffer(c, 16)
-        } else if (c == '=') {
+        }
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.OPERATOR, buffer.toString())
             letter--
             state = 0
@@ -160,24 +181,34 @@ class Lexer(filePath: String) {
      * Buffer   : $ or _ or 0..9
      */
     private fun identifier_2_26(c: Char) {
-        if (Character.isJavaIdentifierPart(c)) {
-            addToBuffer(c, 26)
-        } else if (c == '#') {
-            addToBuffer(c, -1)
-        } else if (c == '/') {
-            addToBuffer(c, 29)
-        } else {
-            if (isNullLiteral(buffer.toString())) {
-                addToken(Token.Type.NULL_LITERAL, buffer.toString())
-            } else if (isBooleanLiteral(buffer.toString())) {
-                addToken(Token.Type.BOOLEAN_LITERAL, buffer.toString())
-            } else if (IsKeyword.parse(buffer.toString())) {
-                addToken(Token.Type.KEYWORD, buffer.toString())
-            } else {
-                addToken(Token.Type.IDENTIFIER, buffer.toString())
+        when {
+            Character.isJavaIdentifierPart(c) -> {
+                addToBuffer(c, 26)
             }
-            state = 0
-            letter--
+            c == '#' -> {
+                addToBuffer(c, -1)
+            }
+            c == '/' -> {
+                addToBuffer(c, 29)
+            }
+            else -> {
+                when {
+                    isNullLiteral(buffer.toString()) -> {
+                        addToken(Token.Type.NULL_LITERAL, buffer.toString())
+                    }
+                    isBooleanLiteral(buffer.toString()) -> {
+                        addToken(Token.Type.BOOLEAN_LITERAL, buffer.toString())
+                    }
+                    IsKeyword.parse(buffer.toString()) -> {
+                        addToken(Token.Type.KEYWORD, buffer.toString())
+                    }
+                    else -> {
+                        addToken(Token.Type.IDENTIFIER, buffer.toString())
+                    }
+                }
+                state = 0
+                letter--
+            }
         }
     }
 
@@ -185,22 +216,29 @@ class Lexer(filePath: String) {
      * State    : 3
      * Buffer   : 0
      */
-    private fun zeroFirst_3(c: Char) {
-        if (CharacterDeterminer.octal(c)) {
+    private fun zeroFirst_3(c: Char) = when {
+        CharacterDeterminer.octal(c) -> {
             addToBuffer(c, 37)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 38)
-        } else if (c == 'b' || c == 'B') {
+        }
+        c == 'b' || c == 'B' -> {
             addToBuffer(c, 35)
-        } else if (c == 'x' || c == 'X') {
+        }
+        c == 'x' || c == 'X' -> {
             addToBuffer(c, 36)
-        } else if (c == '.') {
+        }
+        c == '.' -> {
             addToBuffer(c, 23)
-        } else if (c == 'l' || c == 'L') {
+        }
+        c == 'l' || c == 'L' -> {
             addToBuffer(c, 41)
-        } else if (Character.isJavaIdentifierPart(c) || c == '8' || c == '9') {
+        }
+        Character.isJavaIdentifierPart(c) || c == '8' || c == '9' -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.INT_LITERAL, buffer.toString())
             state = 0
@@ -212,20 +250,26 @@ class Lexer(filePath: String) {
      * Buffer   : 1..9
      * Desc     : non-zero digit
      */
-    private fun nonzeroDigit_4(c: Char) {
-        if (c == '_') {
+    private fun nonzeroDigit_4(c: Char) = when {
+        c == '_' -> {
             addToBuffer(c, 34)
-        } else if (Character.isDigit(c)) {
+        }
+        Character.isDigit(c) -> {
             addToBuffer(c, 4)
-        } else if (Character.isJavaIdentifierPart(c)) {
+        }
+        Character.isJavaIdentifierPart(c) -> {
             addToBuffer(c, -1)
-        } else if (c == '.') {
+        }
+        c == '.' -> {
             addToBuffer(c, 23)
-        } else if (c == 'l' || c == 'L') {
+        }
+        c == 'l' || c == 'L' -> {
             addToBuffer(c, 41)
-        } else if (Character.isJavaIdentifierPart(c)) {
+        }
+        Character.isJavaIdentifierPart(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.INT_LITERAL, buffer.toString())
             letter--
             state = 0
@@ -236,14 +280,16 @@ class Lexer(filePath: String) {
      * State    : 5
      * Buffer   : '
      */
-    private fun charLiteral_5(c: Char) {
-        if (c == '\\') {
+    private fun charLiteral_5(c: Char) = when {
+        c == '\\' -> {
             addToBuffer(c, 31)
-        } else if (Character.isWhitespace(c) && c != ' ' && c != '\t') {
+        }
+        Character.isWhitespace(c) && c != ' ' && c != '\t' -> {
             addToken(Token.Type.ERROR, buffer.toString())
             addToken(Token.Type.WHITESPACE, c)
             state = 0
-        } else {
+        }
+        else -> {
             addToBuffer(c, 32)
         }
     }
@@ -252,18 +298,21 @@ class Lexer(filePath: String) {
      * State    : 6
      * Buffer   : "
      */
-    private fun stringLiteral_6(c: Char) {
-        if (c == '\\') {
+    private fun stringLiteral_6(c: Char) = when {
+        c == '\\' -> {
             addToBuffer(c, 30)
-        } else if (c == '\"') {
+        }
+        c == '\"' -> {
             buffer.append(c)
             addToken(Token.Type.STRING_LITERAL, buffer.toString())
             state = 0
-        } else if (Character.isWhitespace(c) && c != ' ' && c != '\t') {
+        }
+        Character.isWhitespace(c) && c != ' ' && c != '\t' -> {
             addToken(Token.Type.ERROR, buffer.toString())
             addToken(Token.Type.WHITESPACE, c)
             state = 0
-        } else {
+        }
+        else -> {
             addToBuffer(c, 6)
         }
     }
@@ -272,12 +321,14 @@ class Lexer(filePath: String) {
      * State    : 7
      * Buffer   : .
      */
-    private fun dot_7(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun dot_7(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 23)
-        } else if (c == '.') {
+        }
+        c == '.' -> {
             addToBuffer(c, 25)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.SEPARATOR, buffer.toString())
             state = 0
@@ -288,18 +339,23 @@ class Lexer(filePath: String) {
      * State    : 8
      * Buffer   : >
      */
-    private fun greater_8(c: Char) {
-        if (c == '=') {
+    private fun greater_8(c: Char) = when {
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '>') {
+        }
+        c == '>' -> {
             addToBuffer(c, 22)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.OPERATOR, buffer.toString())
             letter--
             state = 0
@@ -310,18 +366,23 @@ class Lexer(filePath: String) {
      * State    : 9
      * Buffer   : <
      */
-    private fun less_9(c: Char) {
-        if (c == '=') {
+    private fun less_9(c: Char) = when {
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '<') {
+        }
+        c == '<' -> {
             addToBuffer(c, 24)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.OPERATOR, buffer.toString())
             letter--
             state = 0
@@ -332,18 +393,23 @@ class Lexer(filePath: String) {
      * State    : 10
      * Buffer   : &
      */
-    private fun ampersand_10(c: Char) {
-        if (c == '&') {
+    private fun ampersand_10(c: Char) = when {
+        c == '&' -> {
             addToBuffer(c, 27)
-        } else if (c == '=') {
+        }
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -359,13 +425,17 @@ class Lexer(filePath: String) {
     private fun singleOperator_11(c: Char) {
         if (c == '=') {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        else if (c == ':') {
             addToBuffer(c, 21)
-        } else if (c == '/') {
+        }
+        else if (c == '/') {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        else if (CharacterDeterminer.operator(c)) {
             addToBuffer(c, -1)
-        } else {
+        }
+        else {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -380,9 +450,11 @@ class Lexer(filePath: String) {
         if (c == ':') {
             addToken(Token.Type.SEPARATOR, "::")
             state = 0
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        else if (CharacterDeterminer.operator(c)) {
             addToBuffer(c, -1)
-        } else {
+        }
+        else {
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
             letter--
@@ -393,18 +465,23 @@ class Lexer(filePath: String) {
      * State    : 13
      * Buffer   : +
      */
-    private fun plus_13(c: Char) {
-        if (c == '+') {
+    private fun plus_13(c: Char) = when {
+        c == '+' -> {
             addToBuffer(c, 11)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '=') {
+        }
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -415,18 +492,23 @@ class Lexer(filePath: String) {
      * State    : 14
      * Buffer   : -
      */
-    private fun minus_14(c: Char) {
-        if (c == '-') {
+    private fun minus_14(c: Char) = when {
+        c == '-' -> {
             addToBuffer(c, 11)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '=') {
+        }
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -438,53 +520,50 @@ class Lexer(filePath: String) {
      * Buffer   : //
      * Desc     : single-line comment
      */
-    private fun singleLineComment_15(c: Char) {
-        if (Character.isWhitespace(c) && c != '\t' && c != ' ') {
-            addToken(Token.Type.COMMENT, buffer.toString())
-            addToken(Token.Type.WHITESPACE, c)
-            state = 0
-        } else {
-            addToBuffer(c, 15)
-        }
+    private fun singleLineComment_15(c: Char) = if (Character.isWhitespace(c) && c != '\t' && c != ' ') {
+        addToken(Token.Type.COMMENT, buffer.toString())
+        addToken(Token.Type.WHITESPACE, c)
+        state = 0
+    } else {
+        addToBuffer(c, 15)
     }
 
     /**
      * State    : 16
      * Buffer   : / *
      */
-    private fun multiLineComment_16(c: Char) {
-        if (c == '*') {
-            addToBuffer(c, 17)
-        } else {
-            addToBuffer(c, 16)
-        }
+    private fun multiLineComment_16(c: Char) = if (c == '*') {
+        addToBuffer(c, 17)
+    } else {
+        addToBuffer(c, 16)
     }
 
     /**
      * State    : 17
      * Buffer   : / *....*
      */
-    private fun starInMultiLineComment_17(c: Char) {
-        if (c == '/') {
-            addToBuffer(c, 0)
-            addToken(Token.Type.COMMENT, buffer.toString())
-        } else {
-            addToBuffer(c, 16)
-        }
+    private fun starInMultiLineComment_17(c: Char) = if (c == '/') {
+        addToBuffer(c, 0)
+        addToken(Token.Type.COMMENT, buffer.toString())
+    } else {
+        addToBuffer(c, 16)
     }
 
     /**
      * State    : 18
      * Buffer   : OPERATOR(=)
      */
-    private fun divideEqual_18(c: Char) {
-        if (c == '/') {
+    private fun divideEqual_18(c: Char) = when {
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -495,37 +574,40 @@ class Lexer(filePath: String) {
      * State    : 19
      * Buffer   : OPERATOR(/)
      */
-    private fun maybeComment_19(c: Char) {
-        if (c == '/' || c == '*') {
-            buffer.deleteCharAt(buffer.length - 1)
-            addToken(Token.Type.OPERATOR, buffer.toString())
-            buffer.append('/')
-            if (c == '/') {
-                addToBuffer(c, 15)
-            } else {
-                addToBuffer(c, 16)
-            }
+    private fun maybeComment_19(c: Char) = if (c == '/' || c == '*') {
+        buffer.deleteCharAt(buffer.length - 1)
+        addToken(Token.Type.OPERATOR, buffer.toString())
+        buffer.append('/')
+        if (c == '/') {
+            addToBuffer(c, 15)
         } else {
-            addToBuffer(c, -1)
+            addToBuffer(c, 16)
         }
+    } else {
+        addToBuffer(c, -1)
     }
 
     /**
      * State    : 20
      * Buffer   : |
      */
-    private fun pipe_20(c: Char) {
-        if (c == '|') {
+    private fun pipe_20(c: Char) = when {
+        c == '|' -> {
             addToBuffer(c, 28)
-        } else if (c == '=') {
+        }
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -552,18 +634,23 @@ class Lexer(filePath: String) {
      * State    : 22
      * Buffer   : >>
      */
-    private fun greaterGreater_22(c: Char) {
-        if (c == '=') {
+    private fun greaterGreater_22(c: Char) = when {
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '>') {
+        }
+        c == '>' -> {
             addToBuffer(c, 11)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.OPERATOR, buffer.toString())
             letter--
             state = 0
@@ -574,16 +661,20 @@ class Lexer(filePath: String) {
      * State    : 23
      * Buffer   : number
      */
-    private fun pointInDigit_23(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun pointInDigit_23(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 23)
-        } else if (CharacterDeterminer.doubleOrFloat(c)) {
+        }
+        CharacterDeterminer.doubleOrFloat(c) -> {
             addToBuffer(c, 42)
-        } else if (Character.isJavaIdentifierPart(c) || c == '.') {
+        }
+        Character.isJavaIdentifierPart(c) || c == '.' -> {
             addToBuffer(c, -1)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 43)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.FLOAT_LITERAL, buffer.toString())
             state = 0
@@ -594,18 +685,23 @@ class Lexer(filePath: String) {
      * State    : 24
      * Buffer   : <<
      */
-    private fun lessLess_24(c: Char) {
-        if (c == '=') {
+    private fun lessLess_24(c: Char) = when {
+        c == '=' -> {
             addToBuffer(c, 18)
-        } else if (c == ':') {
+        }
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '<') {
+        }
+        c == '<' -> {
             addToBuffer(c, 11)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             addToken(Token.Type.OPERATOR, buffer.toString())
             letter--
             state = 0
@@ -616,14 +712,12 @@ class Lexer(filePath: String) {
      * State    : 25
      * Buffer   : ..
      */
-    private fun dotDot_25(c: Char) {
-        if (c == '.') {
-            addToBuffer(c, 28)
-        } else {
-            addToken(Token.Type.SEPARATOR, buffer[0])
-            addToken(Token.Type.SEPARATOR, buffer[1])
-            state = 0
-        }
+    private fun dotDot_25(c: Char) = if (c == '.') {
+        addToBuffer(c, 28)
+    } else {
+        addToken(Token.Type.SEPARATOR, buffer[0])
+        addToken(Token.Type.SEPARATOR, buffer[1])
+        state = 0
     }
 
     /**
@@ -632,14 +726,17 @@ class Lexer(filePath: String) {
      * States   :
      * Desc     :
      */
-    private fun ampersandOrPipe_27(c: Char) {
-        if (c == ':') {
+    private fun ampersandOrPipe_27(c: Char) = when {
+        c == ':' -> {
             addToBuffer(c, 21)
-        } else if (c == '/') {
+        }
+        c == '/' -> {
             addToBuffer(c, 19)
-        } else if (CharacterDeterminer.operator(c)) {
+        }
+        CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -650,14 +747,12 @@ class Lexer(filePath: String) {
      * State    : 28
      * Buffer   : ...
      */
-    private fun dotDotDot_28(c: Char) {
-        if (c == '.') {
-            addToBuffer(c, -1)
-        } else {
-            letter--
-            addToken(Token.Type.SEPARATOR, buffer.toString())
-            state = 0
-        }
+    private fun dotDotDot_28(c: Char) = if (c == '.') {
+        addToBuffer(c, -1)
+    } else {
+        letter--
+        addToken(Token.Type.SEPARATOR, buffer.toString())
+        state = 0
     }
 
     /**
@@ -666,62 +761,70 @@ class Lexer(filePath: String) {
      * States   :
      * Desc     :
      */
-    private fun maybeCommentAfterIdentifier_29(c: Char) {
-        if (c == '/' || c == '*') {
-            buffer.deleteCharAt(buffer.length - 1)
-            if (isNullLiteral(buffer.toString())) {
+    private fun maybeCommentAfterIdentifier_29(c: Char) = if (c == '/' || c == '*') {
+        buffer.deleteCharAt(buffer.length - 1)
+        when {
+            isNullLiteral(buffer.toString()) -> {
                 addToken(Token.Type.NULL_LITERAL, buffer.toString())
-            } else if (isBooleanLiteral(buffer.toString())) {
+            }
+            isBooleanLiteral(buffer.toString()) -> {
                 addToken(Token.Type.BOOLEAN_LITERAL, buffer.toString())
-            } else if (IsKeyword.parse(buffer.toString())) {
+            }
+            IsKeyword.parse(buffer.toString()) -> {
                 addToken(Token.Type.KEYWORD, buffer.toString())
-            } else {
+            }
+            else -> {
                 addToken(Token.Type.IDENTIFIER, buffer.toString())
             }
-            buffer.append('/')
-            if (c == '/') {
-                addToBuffer(c, 15)
-            } else {
-                addToBuffer(c, 16)
-            }
-        } else {
-            letter -= 2
-            buffer.deleteCharAt(buffer.length - 1)
-            if (isNullLiteral(buffer.toString())) {
-                addToken(Token.Type.NULL_LITERAL, buffer.toString())
-            } else if (isBooleanLiteral(buffer.toString())) {
-                addToken(Token.Type.BOOLEAN_LITERAL, buffer.toString())
-            } else if (IsKeyword.parse(buffer.toString())) {
-                addToken(Token.Type.KEYWORD, buffer.toString())
-            } else {
-                addToken(Token.Type.IDENTIFIER, buffer.toString())
-            }
-            state = 0
         }
+        buffer.append('/')
+        if (c == '/') {
+            addToBuffer(c, 15)
+        } else {
+            addToBuffer(c, 16)
+        }
+    } else {
+        letter -= 2
+        buffer.deleteCharAt(buffer.length - 1)
+        when {
+            isNullLiteral(buffer.toString()) -> {
+                addToken(Token.Type.NULL_LITERAL, buffer.toString())
+            }
+            isBooleanLiteral(buffer.toString()) -> {
+                addToken(Token.Type.BOOLEAN_LITERAL, buffer.toString())
+            }
+            IsKeyword.parse(buffer.toString()) -> {
+                addToken(Token.Type.KEYWORD, buffer.toString())
+            }
+            else -> {
+                addToken(Token.Type.IDENTIFIER, buffer.toString())
+            }
+        }
+        state = 0
     }
 
     /**
      * State    : 30
      * Buffer   : "STRING\
      */
-    private fun maybeEscapeSequence_30(c: Char) {
-        if (CharacterDeterminer.special("\\" + c)) {
-            addToBuffer(c, 6)
-        } else {
-            addToBuffer(c, -1)
-        }
+    private fun maybeEscapeSequence_30(c: Char) = if (CharacterDeterminer.special("\\" + c)) {
+        addToBuffer(c, 6)
+    } else {
+        addToBuffer(c, -1)
     }
 
     /**
      * State    : 31
      * Buffer   : '\
      */
-    private fun maybeEscapeSequenceChar_31(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun maybeEscapeSequenceChar_31(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 33)
-        } else if (CharacterDeterminer.special("\\" + c)) {
+        }
+        CharacterDeterminer.special("\\" + c) -> {
             addToBuffer(c, 32)
-        } else {
+        }
+        else -> {
             addToBuffer(c, 44)
         }
     }
@@ -730,27 +833,27 @@ class Lexer(filePath: String) {
      * State    : 32
      * Buffer   : 'CHAR
      */
-    private fun expectEndOfChar_32(c: Char) {
-        if (c == '\'') {
-            buffer.append(c)
-            addToken(Token.Type.CHAR_LITERAL, buffer.toString())
-            state = 0
-        } else {
-            addToBuffer(c, 44)
-        }
+    private fun expectEndOfChar_32(c: Char) = if (c == '\'') {
+        buffer.append(c)
+        addToken(Token.Type.CHAR_LITERAL, buffer.toString())
+        state = 0
+    } else {
+        addToBuffer(c, 44)
     }
 
     /**
      * State    : 33
      * Buffer   : '\DIGIT
      */
-    private fun digitInChar_33(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun digitInChar_33(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 33)
-        } else if (c == '\'') {
+        }
+        c == '\'' -> {
             addToBuffer(c, 0)
             addToken(Token.Type.CHAR_LITERAL, buffer.toString())
-        } else {
+        }
+        else -> {
             addToBuffer(c, 44)
         }
     }
@@ -760,12 +863,14 @@ class Lexer(filePath: String) {
      * Buffer   : 0..9+
      * Desc     : digits
      */
-    private fun underlineInDigit_34(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun underlineInDigit_34(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 4)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 34)
-        } else {
+        }
+        else -> {
             addToBuffer(c, -1)
         }
     }
@@ -775,16 +880,20 @@ class Lexer(filePath: String) {
      * Buffer   : 0..1+
      * Desc     : binary digits
      */
-    private fun binaryDigit_35(c: Char) {
-        if (CharacterDeterminer.binary(c)) {
+    private fun binaryDigit_35(c: Char) = when {
+        CharacterDeterminer.binary(c) -> {
             addToBuffer(c, 35)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 39)
-        } else if (c == 'l' || c == 'L') {
+        }
+        c == 'l' || c == 'L' -> {
             addToBuffer(c, 41)
-        } else if (Character.isJavaIdentifierPart(c)) {
+        }
+        Character.isJavaIdentifierPart(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.INT_LITERAL, buffer.toString())
             state = 0
@@ -796,16 +905,20 @@ class Lexer(filePath: String) {
      * Buffer   : 0..F
      * Desc     : hex digit
      */
-    private fun hexDigit_36(c: Char) {
-        if (CharacterDeterminer.hex(c)) {
+    private fun hexDigit_36(c: Char) = when {
+        CharacterDeterminer.hex(c) -> {
             addToBuffer(c, 36)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 40)
-        } else if (c == 'l' || c == 'L') {
+        }
+        c == 'l' || c == 'L' -> {
             addToBuffer(c, 41)
-        } else if (Character.isJavaIdentifierPart(c)) {
+        }
+        Character.isJavaIdentifierPart(c) -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.INT_LITERAL, buffer.toString())
             state = 0
@@ -817,16 +930,20 @@ class Lexer(filePath: String) {
      * Buffer   : 0..7+
      * Desc     : octal digits
      */
-    private fun octalDigit_37(c: Char) {
-        if (c == '_') {
+    private fun octalDigit_37(c: Char) = when {
+        c == '_' -> {
             addToBuffer(c, 38)
-        } else if (CharacterDeterminer.octal(c)) {
+        }
+        CharacterDeterminer.octal(c) -> {
             addToBuffer(c, 37)
-        } else if (c == 'l' || c == 'L') {
+        }
+        c == 'l' || c == 'L' -> {
             addToBuffer(c, 41)
-        } else if (Character.isJavaIdentifierPart(c) || c == '8' || c == '9') {
+        }
+        Character.isJavaIdentifierPart(c) || c == '8' || c == '9' -> {
             addToBuffer(c, -1)
-        } else {
+        }
+        else -> {
             letter--
             addToken(Token.Type.INT_LITERAL, buffer.toString())
             state = 0
@@ -838,12 +955,14 @@ class Lexer(filePath: String) {
      * Buffer   : 0..7+_
      * Desc     : octal digits with _
      */
-    private fun underlineInOctal_38(c: Char) {
-        if (CharacterDeterminer.octal(c)) {
+    private fun underlineInOctal_38(c: Char) = when {
+        CharacterDeterminer.octal(c) -> {
             addToBuffer(c, 37)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 38)
-        } else {
+        }
+        else -> {
             addToBuffer(c, -1)
         }
     }
@@ -853,12 +972,14 @@ class Lexer(filePath: String) {
      * Buffer   : 0..1
      * Desc     : binary digit
      */
-    private fun underlineInBinary_39(c: Char) {
-        if (c == '_') {
+    private fun underlineInBinary_39(c: Char) = when {
+        c == '_' -> {
             addToBuffer(c, 39)
-        } else if (CharacterDeterminer.binary(c)) {
+        }
+        CharacterDeterminer.binary(c) -> {
             addToBuffer(c, 35)
-        } else {
+        }
+        else -> {
             addToBuffer(c, -1)
         }
     }
@@ -868,12 +989,14 @@ class Lexer(filePath: String) {
      * Buffer   : 0..F+
      * Desc     : hex digit with _
      */
-    private fun underlineInHex_40(c: Char) {
-        if (c == '_') {
+    private fun underlineInHex_40(c: Char) = when {
+        c == '_' -> {
             addToBuffer(c, 40)
-        } else if (CharacterDeterminer.hex(c)) {
+        }
+        CharacterDeterminer.hex(c) -> {
             addToBuffer(c, 36)
-        } else {
+        }
+        else -> {
             addToBuffer(c, -1)
         }
     }
@@ -882,28 +1005,24 @@ class Lexer(filePath: String) {
      * State    : 41
      * Buffer   : L
      */
-    private fun integerSuffix_41(c: Char) {
-        if (Character.isJavaIdentifierPart(c)) {
-            addToBuffer(c, -1)
-        } else {
-            letter--
-            addToken(Token.Type.INT_LITERAL, buffer.toString())
-            state = 0
-        }
+    private fun integerSuffix_41(c: Char) = if (Character.isJavaIdentifierPart(c)) {
+        addToBuffer(c, -1)
+    } else {
+        letter--
+        addToken(Token.Type.INT_LITERAL, buffer.toString())
+        state = 0
     }
 
     /**
      * State    : 42
      * Buffer   : number+ f or F or d or D
      */
-    private fun floatSuffix_42(c: Char) {
-        if (Character.isJavaIdentifierPart(c)) {
-            addToBuffer(c, -1)
-        } else {
-            letter--
-            addToken(Token.Type.FLOAT_LITERAL, buffer.toString())
-            state = 0
-        }
+    private fun floatSuffix_42(c: Char) = if (Character.isJavaIdentifierPart(c)) {
+        addToBuffer(c, -1)
+    } else {
+        letter--
+        addToken(Token.Type.FLOAT_LITERAL, buffer.toString())
+        state = 0
     }
 
     /**
@@ -911,12 +1030,14 @@ class Lexer(filePath: String) {
      * Buffer   : float_
      * Desc     : float number plus _
      */
-    private fun underlineInFloat_43(c: Char) {
-        if (Character.isDigit(c)) {
+    private fun underlineInFloat_43(c: Char) = when {
+        Character.isDigit(c) -> {
             addToBuffer(c, 23)
-        } else if (c == '_') {
+        }
+        c == '_' -> {
             addToBuffer(c, 43)
-        } else {
+        }
+        else -> {
             addToBuffer(c, -1)
         }
     }
@@ -925,43 +1046,42 @@ class Lexer(filePath: String) {
      * State    : 44
      * Buffer   : 'SYMBOLS
      */
-    private fun errorCharLiteral_44(c: Char) {
-        if (c == '\'') {
-            addToBuffer(c, 0)
-            addToken(Token.Type.ERROR, buffer.toString())
-        } else if (Character.isWhitespace(c) && c != ' ' && c != '\t') {
-            addToken(Token.Type.ERROR, buffer.toString())
-            addToken(Token.Type.WHITESPACE, c)
-            state = 0
-        } else {
-            addToBuffer(c, 44)
-        }
+    private fun errorCharLiteral_44(c: Char) = if (c == '\'') {
+        addToBuffer(c, 0)
+        addToken(Token.Type.ERROR, buffer.toString())
+    } else if (Character.isWhitespace(c) && c != ' ' && c != '\t') {
+        addToken(Token.Type.ERROR, buffer.toString())
+        addToken(Token.Type.WHITESPACE, c)
+        state = 0
+    } else {
+        addToBuffer(c, 44)
     }
 
     /**
      * State    : -1
      */
-    private fun incorrectState__1(c: Char) {
-        if (Character.isWhitespace(c) || CharacterDeterminer.separator(c) || c == '.' || CharacterDeterminer.operator(c) && !CharacterDeterminer.operator(buffer[buffer.length - 1])) {
-            letter--
-            addToken(Token.Type.ERROR, buffer.toString())
-            state = 0
-        } else if (buffer.length > 0 && buffer[buffer.length - 1] == '/' && (c == '/' || c == '*')) {
-            buffer.deleteCharAt(buffer.length - 1)
-            addToken(Token.Type.ERROR, buffer.toString())
-            buffer.append('/')
-            if (c == '/') {
-                addToBuffer(c, 15)
+    private fun incorrectState__1(c: Char) =
+            if (Character.isWhitespace(c) || CharacterDeterminer.separator(c) || c == '.' || CharacterDeterminer.operator(c) && !CharacterDeterminer.operator(buffer[buffer.length - 1])) {
+                letter--
+                addToken(Token.Type.ERROR, buffer.toString())
+                state = 0
+            } else if (buffer.length > 0 && buffer[buffer.length - 1] == '/' && (c == '/' || c == '*')) {
+                buffer.deleteCharAt(buffer.length - 1)
+                addToken(Token.Type.ERROR, buffer.toString())
+                buffer.append('/')
+                if (c == '/') {
+                    addToBuffer(c, 15)
+                } else {
+                    addToBuffer(c, 16)
+                }
             } else {
-                addToBuffer(c, 16)
+                addToBuffer(c, -1)
             }
-        } else {
-            addToBuffer(c, -1)
-        }
-    }
 
     private fun isBooleanLiteral(value: String): Boolean {
-        return if (value.length < 4 || value.length > 5) false else "true" == value || "false" == value
+        return if (value.length < 4 || value.length > 5) {
+            false
+        } else "true" == value || "false" == value
     }
 
     private fun isNullLiteral(value: String): Boolean {
@@ -986,10 +1106,10 @@ class Lexer(filePath: String) {
     init {
         tokens = LinkedList()
         buffer = StringBuilder()
-        val input_file = File("src/main/resources/$filePath")
+        val inputFile = File("src/main/resources/$filePath")
         var bytes: ByteArray? = ByteArray(0)
         try {
-            bytes = Files.readAllBytes(input_file.toPath())
+            bytes = Files.readAllBytes(inputFile.toPath())
         } catch (e: IOException) {
             e.printStackTrace()
         }
