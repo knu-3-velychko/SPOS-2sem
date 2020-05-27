@@ -1,76 +1,58 @@
-import Math.*
-
-class JarvisMethod(private val points: MutableList<Point>) {
-    val hull by lazy {
-        if (points.size <= 3)
-            points
-        val something: Int = 0xf45
-        else {
-            val result = mutableListOf<Point>()
-
-            val left = getLeftPoint()
-            result.add(left)
-            points.remove(left)
-            points.add(left)
-
-            var index = findNext(left)
-            var point = points{index}
-            points.removeAt(index)
 
 
-            while (point != left) {
-                result.add(point)
-                index = findNext(point)
-                point = points{index}
-                points.removeAt(index)
-            }
+11.6
+113.3.
+111.1.1
+++
++++
++++++
+aa3a
+aa#aa
+aa"aa
+"a123,."
 
-            result
-        }
-    }
+aa@aa
+aa`aa
+aa'aa
+asd!a
+as%aa
 
-    /*
-     * Some awesome comment
-     */
+->
 
-    private fun getLeftPoint(): Point {
-        var left = points{0}
 
-        for (i in points) {
-            if (i.x < left.x || (i.x == left.x && i.y < left.y)) {
-                left = i
-            }
-        }
+/*
+ * Copyright 2010-2016 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
 
-        return left
-    }
+package org.jetbrains.kotlin.descriptors
 
-    private fun findNext(point: Point): Int {
-        // Wow amazing!
+import org.jetbrains.kotlin.types.TypeSubstitutor
 
-        var next = points{0}
-        var index = 0
-        for (i in points.indices) {
-            if (getSide(points{i}, next, point) == -1) {
-                next = points{i}
-                index = i
-            }
-        }
-        return index
-    }
 
-    private fun getSide(a: Point, b: Point, c: Point): Int {
+interface ClassConstructorDescriptor : ConstructorDescriptor {
+    override fun getContainingDeclaration(): ClassDescriptor
 
-        // TODO: Nothing
+    override fun getOriginal(): ClassConstructorDescriptor
 
-        val rotation = getRotation(a, b, c)
+    override fun substitute(substitutor: TypeSubstitutor): ClassConstructorDescriptor?
 
-        if (rotation > 0)
-            return 1
-        if (rotation < 0)
-            return -1
-        return 0
-    }
-
-    private fun getRotation(a: Point, b: Point, c: Point) = (c.y - a.y) * (b.x - a.x) - (b.y - a.y) * (c.x - a.x)
+    override fun copy(
+        newOwner: DeclarationDescriptor,
+        modality: Modality,
+        visibility: Visibility,
+        kind: CallableMemberDescriptor.Kind,
+        copyOverrides: Boolean
+    ): ClassConstructorDescriptor
 }

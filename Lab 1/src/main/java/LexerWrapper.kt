@@ -1,3 +1,4 @@
+import com.hp.gagawa.java.Node
 import com.hp.gagawa.java.elements.*
 import lexer.Lexer
 import lexer.Token
@@ -49,9 +50,12 @@ class LexerWrapper(fileName: String) {
         html = Html()
         val head = Head()
         val title = Title().appendChild(Text("Reporting Page"))
-        head.appendChild(title)
         val link = Link().setRel("stylesheet").setHref("style.css")
-        head.appendChild(link)
+        with(head) {
+            appendChild(title)
+            appendChild(link)
+            appendText("<meta charset='UTF-8'>")
+        }
         html!!.appendChild(head)
         body = Body()
     }
