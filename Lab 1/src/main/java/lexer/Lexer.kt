@@ -191,7 +191,8 @@ class Lexer(filePath: String) {
             c == '/' -> {
                 addToBuffer(c, 29)
             }
-            else -> {
+
+            (Character.isWhitespace(c) || CharacterDeterminer.operator(c) || CharacterDeterminer.separator(c)) -> {
                 when {
                     isNullLiteral(buffer.toString()) -> {
                         addToken(Token.Type.NULL_LITERAL, buffer.toString())
@@ -208,6 +209,9 @@ class Lexer(filePath: String) {
                 }
                 state = 0
                 letter--
+            }
+            else -> {
+                addToBuffer(c, -1)
             }
         }
     }
@@ -425,17 +429,13 @@ class Lexer(filePath: String) {
     private fun singleOperator_11(c: Char) {
         if (c == '=') {
             addToBuffer(c, 18)
-        }
-        else if (c == ':') {
+        } else if (c == ':') {
             addToBuffer(c, 21)
-        }
-        else if (c == '/') {
+        } else if (c == '/') {
             addToBuffer(c, 19)
-        }
-        else if (CharacterDeterminer.operator(c)) {
+        } else if (CharacterDeterminer.operator(c)) {
             addToBuffer(c, -1)
-        }
-        else {
+        } else {
             letter--
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
@@ -450,11 +450,9 @@ class Lexer(filePath: String) {
         if (c == ':') {
             addToken(Token.Type.SEPARATOR, "::")
             state = 0
-        }
-        else if (CharacterDeterminer.operator(c)) {
+        } else if (CharacterDeterminer.operator(c)) {
             addToBuffer(c, -1)
-        }
-        else {
+        } else {
             addToken(Token.Type.OPERATOR, buffer.toString())
             state = 0
             letter--
@@ -504,6 +502,9 @@ class Lexer(filePath: String) {
         }
         c == '/' -> {
             addToBuffer(c, 19)
+        }
+        c =='>'->{
+            addToBuffer(c,18)
         }
         CharacterDeterminer.operator(c) -> {
             addToBuffer(c, -1)
